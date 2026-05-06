@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tomato Leaf Classifier</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <main class="page">
+    <section class="card upload-card">
+      <h1>Tomato Leaf Disease Classifier</h1>
+      <p class="subtext">Upload a leaf image to predict the class from your trained model.</p>
+
+      <form method="post" enctype="multipart/form-data" class="upload-form">
+        <label class="file-label" for="image">Choose image</label>
+        <input id="image" name="image" type="file" accept="image/*" required />
+        <button type="submit">Predict</button>
+      </form>
+
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+    </section>
+
+    <section class="card result-card">
+      <h2>Result</h2>
+
+      {% if image_data_url %}
+        <img src="{{ image_data_url }}" alt="Uploaded leaf" class="preview" />
+      {% endif %}
+
+      {% if result %}
+        <p class="primary">
+          <strong>{{ result.label }}</strong>
+          <span>{{ '%.2f'|format(result.confidence * 100) }}%</span>
+        </p>
+
+        <ul class="top-list">
+          {% for item in result.top_predictions %}
+            <li>
+              <span>{{ item.label }}</span>
+              <span>{{ '%.2f'|format(item.confidence * 100) }}%</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="placeholder">Prediction output will appear here.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

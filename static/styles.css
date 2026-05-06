@@ -1,0 +1,129 @@
+:root {
+  --bg: #f5f8f4;
+  --card: #ffffff;
+  --text: #1f2a1f;
+  --muted: #607063;
+  --accent: #2f7f42;
+  --accent-dark: #255f33;
+  --error: #b42318;
+  --border: #d7e2d7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 0 0, #e3f2e6 0, transparent 36%),
+    radial-gradient(circle at 100% 0, #eef8f0 0, transparent 32%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+.page {
+  width: min(1000px, 92vw);
+  margin: 32px auto;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(21, 47, 28, 0.08);
+}
+
+h1,
+h2 {
+  margin: 0 0 10px;
+}
+
+.subtext,
+.placeholder {
+  color: var(--muted);
+}
+
+.upload-form {
+  margin-top: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.file-label {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fbfdfb;
+}
+
+button {
+  width: fit-content;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: var(--accent-dark);
+}
+
+.error {
+  color: var(--error);
+  margin-top: 12px;
+}
+
+.preview {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  margin: 8px 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.primary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 6px 0 14px;
+  font-size: 1.05rem;
+}
+
+.top-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px dashed var(--border);
+}
+
+.top-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+@media (max-width: 840px) {
+  .page {
+    grid-template-columns: 1fr;
+    margin: 20px auto;
+  }
+}
