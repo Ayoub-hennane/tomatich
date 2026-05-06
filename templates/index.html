@@ -7,47 +7,134 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
 <body>
-  <main class="page">
-    <section class="card upload-card">
-      <h1>Tomato Leaf Disease Classifier</h1>
-      <p class="subtext">Upload a leaf image to predict the class from your trained model.</p>
+  <main class="page-shell">
+    <section class="hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Tomato leaf diagnosis</p>
+        <h1>Scan a leaf image and get a fast disease prediction.</h1>
+        <p class="intro">
+          Built for quick checks: upload one photo, review the top matches, then decide whether the result looks reliable enough to act on.
+        </p>
+      </div>
 
-      <form method="post" enctype="multipart/form-data" class="upload-form">
-        <label class="file-label" for="image">Choose image</label>
-        <input id="image" name="image" type="file" accept="image/*" required />
-        <button type="submit">Predict</button>
-      </form>
-
-      {% if error %}
-        <p class="error">{{ error }}</p>
-      {% endif %}
+      <div class="hero-meta" aria-label="Model summary">
+        <div class="meta-card">
+          <span class="meta-label">Model input</span>
+          <strong>224 x 224 RGB</strong>
+        </div>
+        <div class="meta-card">
+          <span class="meta-label">Classes</span>
+          <strong>10 tomato conditions</strong>
+        </div>
+      </div>
     </section>
 
-    <section class="card result-card">
-      <h2>Result</h2>
+    <section class="workspace">
+      <section class="panel upload-panel">
+        <div class="panel-heading">
+          <h2>Upload image</h2>
+          <p>Use a clear close-up of the leaf surface, with steady light and minimal background clutter.</p>
+        </div>
 
-      {% if image_data_url %}
-        <img src="{{ image_data_url }}" alt="Uploaded leaf" class="preview" />
-      {% endif %}
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+          <input id="image" name="image" type="file" accept="image/*" required />
 
-      {% if result %}
-        <p class="primary">
-          <strong>{{ result.label }}</strong>
-          <span>{{ '%.2f'|format(result.confidence * 100) }}%</span>
-        </p>
+          <label class="dropzone" for="image">
+            <span class="dropzone-kicker">Image input</span>
+            <strong>Select a tomato leaf photo</strong>
+            <span class="dropzone-copy">JPG, PNG, JPEG, or WEBP</span>
+            <span class="selected-file" id="selected-file">No file selected</span>
+          </label>
 
-        <ul class="top-list">
-          {% for item in result.top_predictions %}
-            <li>
-              <span>{{ item.label }}</span>
-              <span>{{ '%.2f'|format(item.confidence * 100) }}%</span>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="placeholder">Prediction output will appear here.</p>
-      {% endif %}
+          <div class="form-actions">
+            <button type="submit">Run prediction</button>
+            <p class="form-note">The uploaded image is processed locally by the app for a single prediction request.</p>
+          </div>
+        </form>
+
+        {% if error %}
+          <div class="message error" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <div class="tip-strip" aria-label="Capture tips">
+          <span>Keep the leaf centered</span>
+          <span>Avoid motion blur</span>
+          <span>Use natural light when possible</span>
+        </div>
+      </section>
+
+      <section class="panel result-panel">
+        <div class="panel-heading">
+          <h2>Prediction result</h2>
+          <p>Review the top class first, then compare it against the next likely matches.</p>
+        </div>
+
+        {% if result %}
+          <div class="result-grid">
+            <div class="preview-frame">
+              {% if image_data_url %}
+                <img src="{{ image_data_url }}" alt="Uploaded leaf" class="preview" />
+              {% endif %}
+            </div>
+
+            <div class="result-summary">
+              <div class="result-badge">Top match</div>
+              <h3>{{ result.label.replace('Tomato_', '').replace('__', ' ').replace('_', ' ') }}</h3>
+              <div class="confidence-row">
+                <span>Confidence</span>
+                <strong>{{ '%.2f'|format(result.confidence * 100) }}%</strong>
+              </div>
+              <div class="confidence-track" aria-hidden="true">
+                <span class="confidence-fill" style="width: {{ '%.2f'|format(result.confidence * 100) }}%"></span>
+              </div>
+
+              {% if result.confidence < 0.70 %}
+                <p class="confidence-note">This result is usable, but not highly certain. Compare the top alternatives before making a decision.</p>
+              {% else %}
+                <p class="confidence-note">This prediction has relatively strong confidence compared with the other candidate classes.</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="rankings">
+            <div class="rankings-head">
+              <h4>Top predictions</h4>
+              <span>Sorted by model confidence</span>
+            </div>
+
+            <ul class="top-list">
+              {% for item in result.top_predictions %}
+                <li>
+                  <div class="list-copy">
+                    <strong>{{ item.label.replace('Tomato_', '').replace('__', ' ').replace('_', ' ') }}</strong>
+                    <div class="mini-track" aria-hidden="true">
+                      <span class="mini-fill" style="width: {{ '%.2f'|format(item.confidence * 100) }}%"></span>
+                    </div>
+                  </div>
+                  <span class="list-score">{{ '%.2f'|format(item.confidence * 100) }}%</span>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-mark">Ready</div>
+            <h3>No prediction yet</h3>
+            <p class="placeholder">Upload a leaf image to preview the photo, see the top class, and compare the three strongest matches.</p>
+          </div>
+        {% endif %}
+      </section>
     </section>
   </main>
+
+  <script>
+    const fileInput = document.getElementById("image");
+    const fileLabel = document.getElementById("selected-file");
+
+    fileInput.addEventListener("change", () => {
+      const [file] = fileInput.files;
+      fileLabel.textContent = file ? file.name : "No file selected";
+    });
+  </script>
 </body>
 </html>
